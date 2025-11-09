@@ -1,7 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:seclob_app/core/providers/theme_provider.dart';
+import 'package:seclob_app/features/notification/presentation/pages/notification_screen.dart';
 
 import '../../../../core/themes/app_theme.dart';
 import '../../../../core/utils/screensize.dart';
@@ -25,6 +28,9 @@ class _HomeTabState extends State<HomeTab> {
     },
     {
       'image': 'assets/images/banner_3.png',
+    },
+    {
+      'image': 'assets/images/banner_1.png',
     },
     {
       'image': 'assets/images/banner_1.png',
@@ -57,15 +63,18 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildWelcomeSection(context),
+          _buildWelcomeSection(context, isDarkMode),
           const SizedBox(height: 20),
           _buildCarouselSlider(context),
           const SizedBox(height: 5),
-          _buildServicesGrid(context),
+          _buildServicesGrid(context, isDarkMode),
           const SizedBox(height: 24),
           _buildReferralSection(context),
         ],
@@ -73,23 +82,22 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  Widget _buildWelcomeSection(BuildContext context) {
+  Widget _buildWelcomeSection(BuildContext context, bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Stack(
           children: [
-            // SVG Background
             SvgPicture.asset(
               'assets/images/home_header_image.svg',
               width: screenWidth(context),
-              height: screenHeight(context, dividedBy: 3.0),
+              height: screenHeight(context, dividedBy: 3.2),
               fit: BoxFit.cover,
+              color: isDarkMode ? AppTheme.darkSurfaceColor : null,
             ),
-            // Content overlay
             Container(
               width: screenWidth(context),
-              height: screenHeight(context, dividedBy: 3.0),
+              height: screenHeight(context, dividedBy: 3.2),
               child: Padding(
                 padding:
                     EdgeInsets.only(left: screenWidth(context, dividedBy: 18)),
@@ -97,24 +105,36 @@ class _HomeTabState extends State<HomeTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: screenHeight(context, dividedBy: 14),
+                      height: screenHeight(context, dividedBy: 16),
                     ),
                     Row(
                       children: [
                         Text(
                           'Hey daniel!👋',
                           style: TextStyle(
-                              color: Colors.black.withOpacity(0.6),
+                              color: isDarkMode
+                                  ? AppTheme.darkTextPrimary.withOpacity(0.8)
+                                  : Colors.black.withOpacity(0.8),
                               fontSize: 20,
                               fontWeight: FontWeight.w500),
                         ),
                         SizedBox(
                           width: screenWidth(context, dividedBy: 2.2),
                         ),
-                        SvgPicture.asset(
-                          'assets/icons/Notification.svg',
-                          width: screenWidth(context, dividedBy: 34),
-                          height: screenHeight(context, dividedBy: 34),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NotificationScreen(),
+                                ));
+                          },
+                          child: SvgPicture.asset(
+                            'assets/icons/Notification.svg',
+                            width: screenWidth(context, dividedBy: 34),
+                            height: screenHeight(context, dividedBy: 34),
+                            color: isDarkMode ? AppTheme.darkTextPrimary : null,
+                          ),
                         ),
                       ],
                     ),
@@ -123,25 +143,30 @@ class _HomeTabState extends State<HomeTab> {
                     ),
                     Text('Available balance',
                         style: TextStyle(
-                            color: Colors.black.withOpacity(0.6),
+                            color: isDarkMode
+                                ? AppTheme.darkTextPrimary.withOpacity(0.6)
+                                : Colors.black.withOpacity(0.6),
                             fontSize: 15,
                             fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 5),
                     Text(
-                      '\u20B9 25,000.00',
+                      '\u20B925,000.00',
                       style: TextStyle(
-                          color: Colors.black.withOpacity(0.6),
-                          fontSize: 38,
-                          fontWeight: FontWeight.w900),
+                          color: isDarkMode
+                              ? AppTheme.darkTextPrimary.withOpacity(0.8)
+                              : Colors.black.withOpacity(0.8),
+                          fontSize: 39,
+                          fontFamily: 'SF Pro',
+                          fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 8),
                     Container(
-                      width: screenWidth(context, dividedBy: 4.0),
-                      height: screenHeight(context, dividedBy: 20),
-                      decoration: BoxDecoration(
+                      width: screenWidth(context, dividedBy: 4.5),
+                      height: screenHeight(context, dividedBy: 21),
+                      decoration: const BoxDecoration(
                           color: AppTheme.primaryColor,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
@@ -177,13 +202,13 @@ class _HomeTabState extends State<HomeTab> {
             return Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  image: DecorationImage(
+                  image: const DecorationImage(
                       image: AssetImage('assets/images/image 68.png'),
                       fit: BoxFit.cover)),
             );
           }).toList(),
           options: CarouselOptions(
-            height: 125,
+            height: screenHeight(context, dividedBy: 6.5),
             autoPlay: true,
             enlargeCenterPage: true,
             aspectRatio: 16 / 9,
@@ -219,7 +244,7 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  Widget _buildServicesGrid(BuildContext context) {
+  Widget _buildServicesGrid(BuildContext context, bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 17),
       child: Column(
@@ -231,11 +256,13 @@ class _HomeTabState extends State<HomeTab> {
               'Services',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w600,
-                  fontSize: 19,
-                  color: Colors.black.withOpacity(0.7)),
+                  fontSize: 18,
+                  color: isDarkMode
+                      ? AppTheme.darkTextPrimary.withOpacity(0.7)
+                      : Colors.black.withOpacity(0.7)),
             ),
           ),
-          const SizedBox(height: 3), // Add this to control spacing
+          const SizedBox(height: 3),
           GridView.builder(
             padding: const EdgeInsets.only(top: 12),
             shrinkWrap: true,
@@ -244,11 +271,11 @@ class _HomeTabState extends State<HomeTab> {
               crossAxisCount: 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
-              childAspectRatio: 2.0,
+              childAspectRatio: 2.1,
             ),
             itemCount: services.length,
             itemBuilder: (context, index) {
-              return _buildServiceItem(context, services[index]);
+              return _buildServiceItem(context, services[index], isDarkMode);
             },
           ),
         ],
@@ -256,13 +283,16 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  Widget _buildServiceItem(BuildContext context, Map<String, dynamic> service) {
+  Widget _buildServiceItem(
+      BuildContext context, Map<String, dynamic> service, bool isDarkMode) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.transparent,
+        color: isDarkMode ? AppTheme.darkSurfaceColor : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.black.withOpacity(0.1),
+          color: isDarkMode
+              ? Colors.white.withOpacity(0.1)
+              : Colors.black.withOpacity(0.1),
           width: 1,
         ),
       ),
@@ -277,6 +307,7 @@ class _HomeTabState extends State<HomeTab> {
                   width: screenWidth(context, dividedBy: 10),
                   height: screenHeight(context, dividedBy: 10),
                   fit: BoxFit.contain,
+                  color: isDarkMode ? Colors.white : Colors.black,
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -285,10 +316,12 @@ class _HomeTabState extends State<HomeTab> {
                   children: [
                     Text(
                       service['title'],
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.textPrimary,
+                        color: isDarkMode
+                            ? AppTheme.darkTextPrimary
+                            : AppTheme.textPrimary,
                       ),
                     ),
                   ],
@@ -301,14 +334,15 @@ class _HomeTabState extends State<HomeTab> {
               top: 0,
               right: 0,
               child: ClipRRect(
-                borderRadius: BorderRadius.only(topRight: Radius.circular(11)),
+                borderRadius:
+                    const BorderRadius.only(topRight: Radius.circular(11)),
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppTheme.secondaryColor,
-                    borderRadius:
-                        BorderRadius.only(bottomLeft: Radius.circular(10)),
+                    borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(10)),
                     boxShadow: [
                       BoxShadow(
                         color: AppTheme.accentColor.withOpacity(0.3),
@@ -338,7 +372,7 @@ class _HomeTabState extends State<HomeTab> {
       child: Container(
         width: screenWidth(context, dividedBy: 1.1),
         height: screenHeight(context, dividedBy: 5.5),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(20)),
             image: DecorationImage(
                 image: AssetImage('assets/images/refer_a_friend_image.png'))),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/themes/app_theme.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
 import '../widgets/home_tab.dart';
@@ -15,10 +18,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
     return Scaffold(
-      backgroundColor: AppTheme.surfaceColor,
+      backgroundColor:
+          isDarkMode ? AppTheme.darkSurfaceColor : AppTheme.surfaceColor,
       body: _buildBody(),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: _buildBottomNavigationBar(isDarkMode),
     );
   }
 
@@ -37,39 +44,132 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      currentIndex: _currentIndex,
-      onTap: (index) {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppTheme.primaryColor,
-      unselectedItemColor: AppTheme.textSecondary,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: 'Home',
+  Widget _buildBottomNavigationBar(bool isDarkMode) {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: isDarkMode ? AppTheme.darkSurfaceColor : Colors.white,
+        selectedItemColor: AppTheme.primaryColor,
+        unselectedItemColor:
+            isDarkMode ? AppTheme.darkTextSecondary : AppTheme.textSecondary,
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.attach_money_outlined),
-          activeIcon: Icon(Icons.attach_money),
-          label: 'Revenue',
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 12,
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.history_outlined),
-          activeIcon: Icon(Icons.history),
-          label: 'History',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outlined),
-          activeIcon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
+        items: [
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'assets/icons/home_logo.svg',
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                isDarkMode
+                    ? AppTheme.darkTextSecondary
+                    : AppTheme.textSecondary,
+                BlendMode.srcIn,
+              ),
+            ),
+            activeIcon: SvgPicture.asset(
+              'assets/icons/home_logo.svg',
+              width: 24,
+              height: 24,
+              colorFilter: const ColorFilter.mode(
+                AppTheme.primaryColor,
+                BlendMode.srcIn,
+              ),
+            ),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'assets/icons/revenue_icon.svg',
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                isDarkMode
+                    ? AppTheme.darkTextSecondary
+                    : AppTheme.textSecondary,
+                BlendMode.srcIn,
+              ),
+            ),
+            activeIcon: SvgPicture.asset(
+              'assets/icons/revenue_icon.svg',
+              width: 24,
+              height: 24,
+              colorFilter: const ColorFilter.mode(
+                AppTheme.primaryColor,
+                BlendMode.srcIn,
+              ),
+            ),
+            label: 'Revenue',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'assets/icons/history_icon.svg',
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                isDarkMode
+                    ? AppTheme.darkTextSecondary
+                    : AppTheme.textSecondary,
+                BlendMode.srcIn,
+              ),
+            ),
+            activeIcon: SvgPicture.asset(
+              'assets/icons/history_icon.svg',
+              width: 24,
+              height: 24,
+              colorFilter: const ColorFilter.mode(
+                AppTheme.primaryColor,
+                BlendMode.srcIn,
+              ),
+            ),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'assets/icons/setting (1).svg',
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                isDarkMode
+                    ? AppTheme.darkTextSecondary
+                    : AppTheme.textSecondary,
+                BlendMode.srcIn,
+              ),
+            ),
+            activeIcon: SvgPicture.asset(
+              'assets/icons/setting (1).svg',
+              width: 24,
+              height: 24,
+              colorFilter: const ColorFilter.mode(
+                AppTheme.primaryColor,
+                BlendMode.srcIn,
+              ),
+            ),
+            label: 'Profile',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -79,7 +179,10 @@ class RevenueTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -88,20 +191,14 @@ class RevenueTab extends StatelessWidget {
             size: 64,
             color: AppTheme.primaryColor,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'Revenue',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Your revenue details will appear here',
-            style: TextStyle(
-              color: AppTheme.textSecondary,
+              color:
+                  isDarkMode ? AppTheme.darkTextPrimary : AppTheme.textPrimary,
             ),
           ),
         ],
@@ -115,29 +212,26 @@ class HistoryTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.history,
             size: 64,
             color: AppTheme.primaryColor,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'History',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Your transaction history will appear here',
-            style: TextStyle(
-              color: AppTheme.textSecondary,
+              color:
+                  isDarkMode ? AppTheme.darkTextPrimary : AppTheme.textPrimary,
             ),
           ),
         ],

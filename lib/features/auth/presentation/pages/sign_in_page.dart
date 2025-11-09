@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/themes/app_theme.dart';
 import '../../../../core/utils/screensize.dart';
 import '../../../dashboard/presentation/pages/home_page.dart';
@@ -45,14 +47,16 @@ class _SignInPageState extends State<SignInPage> {
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your email or username';
+      return 'Please enter your email address';
     }
 
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    final usernameRegex = RegExp(r'^[a-zA-Z0-9_]+$');
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+      caseSensitive: false,
+    );
 
-    if (!emailRegex.hasMatch(value) && !usernameRegex.hasMatch(value)) {
-      return 'Please enter a valid email or username';
+    if (!emailRegex.hasMatch(value)) {
+      return 'Please enter a valid email address';
     }
 
     return null;
@@ -70,8 +74,11 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? AppTheme.darkSurfaceColor : Colors.white,
       body: Form(
         key: _formKey,
         child: Column(
@@ -79,8 +86,8 @@ class _SignInPageState extends State<SignInPage> {
             Container(
               width: screenWidth(context),
               height: screenHeight(context, dividedBy: 3.4),
-              decoration: BoxDecoration(
-                  color: Colors.red,
+              decoration: const BoxDecoration(
+                  color: Colors.white,
                   image: DecorationImage(
                       image: AssetImage('assets/images/Rectangle 141928.png'),
                       fit: BoxFit.cover)),
@@ -100,11 +107,15 @@ class _SignInPageState extends State<SignInPage> {
                           width: screenWidth(context, dividedBy: 20),
                           height: screenHeight(context, dividedBy: 20),
                         ),
-                        Text(
+                        const SizedBox(
+                          width: 3,
+                        ),
+                        const Text(
                           'seclob',
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 30,
+                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w900),
                         ),
                       ],
@@ -112,13 +123,13 @@ class _SignInPageState extends State<SignInPage> {
                     SizedBox(
                       height: screenHeight(context, dividedBy: 32),
                     ),
-                    Text('Welcome back!',
+                    const Text('Welcome back!',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 25,
                             fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       'Welcome back to your workspace.',
                       style: TextStyle(color: Colors.white, fontSize: 15.5),
                     ),
@@ -126,32 +137,45 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 48),
+            SizedBox(height: screenHeight(context, dividedBy: 20)),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildInputField('Email or Username', Icons.person_outline,
-                  controller: _emailController, validator: _validateEmail),
+              child: _buildInputField(
+                'Enter email',
+                'assets/icons/email_icon.svg',
+                controller: _emailController,
+                validator: _validateEmail,
+                isDarkMode: isDarkMode,
+                keyboardType: TextInputType.emailAddress,
+              ),
             ),
             const SizedBox(height: 16),
             Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: screenWidth(context, dividedBy: 17)),
-              child: _buildInputField('Password', Icons.lock_outline,
-                  isPassword: true,
-                  controller: _passwordController,
-                  validator: _validatePassword),
+              child: _buildInputField(
+                'Enter password',
+                'assets/icons/password_icon.svg',
+                isPassword: true,
+                controller: _passwordController,
+                validator: _validatePassword,
+                isDarkMode: isDarkMode,
+              ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             Row(
               children: [
                 SizedBox(
-                  width: screenWidth(context, dividedBy: 1.7),
+                  width: screenWidth(context, dividedBy: 1.8),
                 ),
                 Text(
-                  'Forgot password ?',
-                  style: TextStyle(fontSize: 13, color: Colors.black),
+                  'Forget password ?',
+                  style: TextStyle(
+                      fontSize: 14.5,
+                      color:
+                          isDarkMode ? AppTheme.darkTextPrimary : Colors.black),
                 ),
               ],
             ),
@@ -164,9 +188,12 @@ class _SignInPageState extends State<SignInPage> {
             const Spacer(),
             Text(
               'Or Log in with',
-              style: TextStyle(fontSize: 13),
+              style: TextStyle(
+                fontSize: 13,
+                color: isDarkMode ? AppTheme.darkTextPrimary : Colors.black,
+              ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             Row(
@@ -177,7 +204,7 @@ class _SignInPageState extends State<SignInPage> {
                   width: screenWidth(context, dividedBy: 30),
                   height: screenHeight(context, dividedBy: 30),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 25,
                 ),
                 SvgPicture.asset(
@@ -185,7 +212,7 @@ class _SignInPageState extends State<SignInPage> {
                   width: screenWidth(context, dividedBy: 30),
                   height: screenHeight(context, dividedBy: 30),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 25,
                 ),
                 SvgPicture.asset(
@@ -195,11 +222,11 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 18,
             ),
-            _buildSignUpPrompt(),
-            SizedBox(
+            _buildSignUpPrompt(isDarkMode),
+            const SizedBox(
               height: 20,
             ),
           ],
@@ -208,24 +235,53 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget _buildInputField(String hint, IconData icon,
-      {bool isPassword = false,
-      TextEditingController? controller,
-      String? Function(String?)? validator}) {
+  Widget _buildInputField(
+    String hint,
+    String svgPath, {
+    bool isPassword = false,
+    TextEditingController? controller,
+    String? Function(String?)? validator,
+    bool isDarkMode = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return TextFormField(
       controller: controller,
       validator: validator,
       obscureText: isPassword,
+      keyboardType: keyboardType,
+      style: TextStyle(
+        color: isDarkMode ? AppTheme.darkTextPrimary : Colors.black,
+      ),
       decoration: InputDecoration(
         hintText: hint,
-        prefixIcon: Icon(icon, color: AppTheme.textSecondary),
+        hintStyle: TextStyle(
+            color: isDarkMode
+                ? AppTheme.darkTextSecondary
+                : Colors.black.withOpacity(0.3)),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: SvgPicture.asset(
+            svgPath,
+            width: 20,
+            height: 20,
+            color: AppTheme.primaryColor,
+          ),
+        ),
+        filled: isDarkMode,
+        fillColor: isDarkMode ? AppTheme.darkSurfaceColor : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(
+              color: isDarkMode
+                  ? Colors.white.withOpacity(0.1)
+                  : Colors.grey.shade300),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(
+              color: isDarkMode
+                  ? Colors.white.withOpacity(0.1)
+                  : Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -249,7 +305,7 @@ class _SignInPageState extends State<SignInPage> {
       child: ElevatedButton(
         onPressed: _isLoading ? null : _login,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.primaryColor,
+          backgroundColor: AppTheme.primaryColor.withOpacity(0.8),
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
@@ -257,7 +313,7 @@ class _SignInPageState extends State<SignInPage> {
           ),
         ),
         child: _isLoading
-            ? SizedBox(
+            ? const SizedBox(
                 height: 20,
                 width: 20,
                 child: CircularProgressIndicator(
@@ -273,17 +329,19 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget _buildSignUpPrompt() {
+  Widget _buildSignUpPrompt(bool isDarkMode) {
     return Center(
       child: RichText(
-        text: const TextSpan(
-          style: TextStyle(color: Colors.black, fontSize: 15),
+        text: TextSpan(
+          style: TextStyle(
+              color: isDarkMode ? AppTheme.darkTextPrimary : Colors.black,
+              fontSize: 15),
           children: [
-            TextSpan(text: "Don't have an account? "),
+            TextSpan(text: "Don't have an account ? "),
             TextSpan(
               text: 'Sign Up',
               style: TextStyle(
-                color: AppTheme.primaryColor,
+                color: AppTheme.primaryColor.withOpacity(0.7),
                 fontWeight: FontWeight.w500,
               ),
             ),

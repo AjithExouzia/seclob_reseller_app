@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:seclob_app/core/utils/screensize.dart';
 import '../../../../core/themes/app_theme.dart';
 
 class OnboardingContent extends StatelessWidget {
@@ -42,16 +43,21 @@ class OnboardingContent extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 5),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                ),
+                height: screenHeight(context, dividedBy: 21),
                 decoration: BoxDecoration(
                   color: AppTheme.primaryColor.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Column(
                   children: [
+                    SizedBox(
+                      height: 5,
+                    ),
                     Text(
                       subtitle,
                       style: const TextStyle(

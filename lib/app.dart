@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/providers/theme_provider.dart';
 import 'core/themes/app_theme.dart';
-import 'features/onboarding/presentation/pages/onboarding_page.dart';
+import 'features/splash/presentation/pages/splash_page.dart'; // Add this import
 
 class SeclobApp extends StatelessWidget {
   const SeclobApp({super.key});
@@ -20,7 +20,8 @@ class SeclobApp extends StatelessWidget {
             themeMode:
                 themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             debugShowCheckedModeBanner: false,
-            home: const OnboardingPage(),
+            home:
+                const SplashPage(), // Changed from OnboardingPage to SplashPage
           );
         },
       ),
